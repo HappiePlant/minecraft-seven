@@ -2,7 +2,7 @@ import argparse
 import os
 from zipfile import ZipFile
 from xdialog import open_file
-from builder import build_as_pixel_font_converter_zip
+from builder import build_as_pixel_font_converter_batch
 import json
 
 MINECRAFT_VERSION = "1.21"
@@ -32,7 +32,7 @@ def check_minecraft_version(jar_path: str):
 def main() -> None:
     jar_path = get_jar_path()
     check_minecraft_version(jar_path)
-    build_as_pixel_font_converter_zip(jar_path, MINECRAFT_VERSION)
+    build_as_pixel_font_converter_batch(jar_path, MINECRAFT_VERSION)
 
 
     return

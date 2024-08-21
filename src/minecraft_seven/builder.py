@@ -71,19 +71,30 @@ def build_tileset(tileset_data: dict, providers: list[Provider]) -> (Image, str)
             font_x = 0
             font_y += char_height
 
-    with open("out/glyphs.txt", "w") as glyphs_file:
-        glyphs_file.write(glyphs)
-    tileset.save("out/tileset.png")
 
     return tileset, glyphs
 
-def convert_to_pixel_font_converter_zip():
-    ...
+
+def convert_to_pixel_font_converter_batch(tileset: Image, glyphs: str, tileset_data: dict):
+    with open("resources/pixel_font_converter_settings.json") as settings_file:
+        settings = json.load(settings_file)
+
+    settings["glyph-width"] = tileset_data["tile_width"]
+    settings["glyph-height"] = tileset_data["tile_height"]
+    settings["glyph-baseline"] = tileset_data["tile_baseline"]
+
+    settings["in-glyphs"] = [glyphs]
+
+    with open("out/Minecraft Seven.json", "w") as settings_output_file:
+        json.dump(settings, settings_output_file)
+
+    tileset.save("out/Minecraft Seven.png")
 
 
-def build_as_pixel_font_converter_zip(jar_path: str, mc_version: str):
+def build_as_pixel_font_converter_batch(jar_path: str, mc_version: str):
     tile_data = load_tile_data(mc_version)
     providers = get_assets(jar_path, tile_data)
     for provider in providers:
         print(provider.id)
-    build_tileset(tile_data["tileset"], providers)
+    tileset, glyphs = build_tileset(tile_data["tileset"], providers)
+    convert_to_pixel_font_converter_batch(tileset, glyphs, tile_data["tileset"])

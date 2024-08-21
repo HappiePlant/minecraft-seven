@@ -1,0 +1,39 @@
+{
+	"$baseURI": "https://yal.cc/r/20/pixelfont/",
+	"$version": "1.0",
+	"in-glyphs": [
+		""
+	],
+	"glyph-color": "auto",
+	"in-kerning": [
+		""
+	],
+	"glyph-width": 0,
+	"glyph-height": 0,
+	"glyph-ofs-x": 0,
+	"glyph-ofs-y": 0,
+	"glyph-sep-x": 0,
+	"glyph-sep-y": 0,
+	"glyph-base-x": 0,
+	"glyph-baseline": 0,
+	"glyph-spacing": 1,
+	"font-is-mono": false,
+	"font-em-square": 1024,
+	"font-line-gap": 0,
+	"font-ascend": 768,
+	"font-descend": -256,
+	"font-px-size": 128,
+	"contour-type": "pixel",
+	"font-type": "ttf",
+	"font-name": "Minecraft Seven",
+	"font-author": "Mojang Studios",
+	"font-copy": "© Mojang Studios",
+	"font-version": "1.21",
+	"font-desc": "The font is the typeface that Minecraft uses. It was first added in Java Edition Classic 0.0.2a and has seen many revisions and additions since. Its design has been present in all ports of the game.",
+	"font-license": "All Rights Reserved",
+	"font-license-url": "https://www.minecraft.net/en-us/usage-guidelines",
+	"font-sample-text": "Minecraft",
+	"font-preview-text": [
+		"Minecraft"
+	]
+}
