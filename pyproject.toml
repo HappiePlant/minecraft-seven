@@ -1,0 +1,11 @@
+[project]
+name = "minecraft-seven"
+version = "0.1.0"
+description = "Tool to build the minecraft font files into a format for Pixel Font Converter"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
