@@ -1,5 +1,5 @@
+import argparse
 import os
-import sys
 from zipfile import ZipFile
 from xdialog import open_file
 from builder import build_as_pixel_font_converter_zip
@@ -8,10 +8,12 @@ import json
 MINECRAFT_VERSION = "1.21"
 
 def get_jar_path() -> str:
-    jar_path: str
-    if len(sys.argv) > 1:
-        jar_path = sys.argv[1]
-        jar_path = os.path.abspath(jar_path)
+    parser = argparse.ArgumentParser(description="Minecraft Seven Font Builder")
+    parser.add_argument("jar_path", nargs="?",  default=None)
+    args = parser.parse_args()
+
+    if args.jar_path is not None:
+        jar_path: str = os.path.abspath(args.jar_path)
     else:
         jar_path = open_file(title="Select the 1.21 jar file", filetypes=[("JAR file", ".jar")], multiple=False)
         if jar_path == "":
