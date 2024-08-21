@@ -1,8 +1,8 @@
 import io
 from zipfile import ZipFile
 import json
-from textwrap import wrap
 from PIL import Image
+
 
 def get_assets(jar_path: str) -> list[dict]:
     with ZipFile(jar_path, 'r') as jar:
@@ -15,7 +15,8 @@ def get_assets(jar_path: str) -> list[dict]:
     return providers
 
 def build_tileset(providers: list[dict]):
-    tileset = Image.new("RGBA", (10000, 12), color=(255, 0, 0, 0))
+    tile_height = 12
+    tileset = Image.new("RGBA", (20000, tile_height), color=(255, 0, 0, 0))
     glyphs: str = ""
     tileset_x = tileset_y = 0
     for provider in providers:
@@ -26,15 +27,16 @@ def build_tileset(providers: list[dict]):
         else:
             char_height = 8
         char_width = 8
+        tile_height_offset = tile_height - char_height
         provider_chars: list[str] = provider["chars"]
         for chars in provider_chars:  # "abcdefghij"
             for char in chars:  # "a"
                 if char != "\x00":
                     char_img = font_img.crop((font_x, font_y, font_x + char_width, font_y + char_height))
-                    tileset.paste(char_img, (tileset_x, tileset_y))
+                    tileset.paste(char_img, (tileset_x, tile_height_offset))
                     glyphs += char
-                font_x += char_width
-                tileset_x += char_width
+                    font_x += char_width
+                    tileset_x += char_width
             font_x = 0
             font_y += char_height
     tileset.save("out/tileset.png")
