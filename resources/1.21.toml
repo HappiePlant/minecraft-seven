@@ -1,17 +1,17 @@
-["minecraft:font/ascii.png"]
+[tileset]
+tile_width = 9
+tile_height = 12
+tile_baseline = 10
+tileset_width = 21717
+
+[providers."minecraft:font/ascii.png"]
 width = 8
 height = 8
-gap_x = 0
-gap_y = 0
 
-["minecraft:font/nonlatin_european.png"]
+[providers."minecraft:font/nonlatin_european.png"]
 width = 8
 height = 8
-gap_x = 0
-gap_y = 0
 
-["minecraft:font/accented.png"]
+[providers."minecraft:font/accented.png"]
 width = 9
 height = 12
-gap_x = 0
-gap_y = 0
