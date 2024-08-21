@@ -1,47 +1,82 @@
 import io
+import tomllib
 from zipfile import ZipFile
 import json
 from PIL import Image
 
+class Provider:
+    id: str
+    file: bytes
+    width: int
+    height: int
+    baseline: int
+    chars: list[str]
 
-def get_assets(jar_path: str) -> list[dict]:
+def get_assets(jar_path: str, tile_data: dict) -> list[Provider]:
     with ZipFile(jar_path, 'r') as jar:
         default_data: dict = json.loads(jar.read("assets/minecraft/font/include/default.json"))
         providers: list[dict] = default_data["providers"]
+        new_providers: list[Provider] = []
         for provider in providers:
-            texture_path: str = provider["file"]
-            texture_path = texture_path.replace("minecraft:", "assets/minecraft/textures/")
-            provider["file"] = jar.read(texture_path)
-    return providers
 
-def build_tileset(providers: list[dict]):
+            new_provider: Provider = Provider()
+            texture_id: str = provider["file"]
+            new_provider.id = texture_id
+            texture_name = texture_id.replace("minecraft:", "assets/minecraft/textures/")
+            new_provider.file = jar.read(texture_name)
+
+            provider_tile_data = tile_data[texture_id]
+            new_provider.width = provider_tile_data["width"]
+            new_provider.height = provider_tile_data["height"]
+
+            new_provider.chars = provider["chars"]
+            new_provider.baseline = provider["ascent"]
+
+            new_providers.append(new_provider)
+
+    return new_providers
+
+def load_tile_data(mc_version: str) -> dict:
+    filename = "resources/" + mc_version + ".toml"
+    with open(filename, "r") as file:
+        return tomllib.loads(file.read())
+
+def build_tileset(providers: list[Provider]):
+    tile_width = 9
     tile_height = 12
-    tileset = Image.new("RGBA", (20000, tile_height), color=(255, 0, 0, 0))
+    tile_baseline = 10
+    tileset_width = 21717
+    tileset = Image.new("RGBA", (tileset_width, tile_height), color=(255, 0, 0, 0))
     glyphs: str = ""
     tileset_x = tileset_y = 0
     for provider in providers:
-        font_img = Image.open(io.BytesIO(provider["file"]))
+        font_img = Image.open(io.BytesIO(provider.file))
         font_x = font_y = 0
-        if "height" in provider:
-            char_height = provider["height"]
-        else:
-            char_height = 8
-        char_width = 8
-        tile_height_offset = tile_height - char_height
-        provider_chars: list[str] = provider["chars"]
+        char_height = provider.height
+        char_width = provider.width
+        char_baseline = provider.baseline
+        tile_height_offset = tile_baseline - char_baseline
+        provider_chars: list[str] = provider.chars
         for chars in provider_chars:  # "abcdefghij"
             for char in chars:  # "a"
                 if char != "\x00":
                     char_img = font_img.crop((font_x, font_y, font_x + char_width, font_y + char_height))
                     tileset.paste(char_img, (tileset_x, tile_height_offset))
                     glyphs += char
-                    font_x += char_width
-                    tileset_x += char_width
+
+                    tileset_x += tile_width
+                font_x += char_width
             font_x = 0
             font_y += char_height
+
+    with open("out/glyphs.txt", "w") as glyphs_file:
+        glyphs_file.write(glyphs)
     tileset.save("out/tileset.png")
 
 
-def build_as_pixel_font_converter_zip(jar_path: str):
-    providers = get_assets(jar_path)
+def build_as_pixel_font_converter_zip(jar_path: str, mc_version: str):
+    tile_data = load_tile_data(mc_version)
+    providers = get_assets(jar_path, tile_data)
+    for provider in providers:
+        print(provider.id)
     build_tileset(providers)

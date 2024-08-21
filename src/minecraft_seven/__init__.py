@@ -32,7 +32,7 @@ def check_minecraft_version(jar_path: str):
 def main() -> None:
     jar_path = get_jar_path()
     check_minecraft_version(jar_path)
-    build_as_pixel_font_converter_zip(jar_path)
+    build_as_pixel_font_converter_zip(jar_path, MINECRAFT_VERSION)
 
 
     return
