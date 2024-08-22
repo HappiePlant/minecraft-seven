@@ -49,7 +49,7 @@ def build_tileset(tileset_data: dict, providers: list[Provider]) -> (Image, str)
 
     tileset = Image.new("RGBA", (tileset_width, tile_height), color=(255, 0, 0, 0))
     glyphs: str = ""
-    tileset_x = tileset_y = 0
+    tileset_x = 0
 
     for provider in providers:
         char_height = provider.height
