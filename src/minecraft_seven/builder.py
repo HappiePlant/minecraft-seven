@@ -2,7 +2,8 @@ import io
 import tomllib
 from zipfile import ZipFile
 import json
-from PIL import Image
+from PIL import Image, ImageDraw
+
 
 class Provider:
     id: str
@@ -12,9 +13,11 @@ class Provider:
     baseline: int
     chars: list[str]
 
-def get_assets(jar_path: str, tile_data: dict) -> list[Provider]:
+def get_assets(jar_path: str, tile_data: dict) -> (list[Provider], int):
     with ZipFile(jar_path, 'r') as jar:
         default_data: dict = json.loads(jar.read("assets/minecraft/font/include/default.json"))
+        space_data: dict = json.loads(jar.read("assets/minecraft/font/include/space.json"))
+        space_width = space_data["providers"][0]["advances"][" "]
         providers: list[dict] = default_data["providers"]
         new_providers: list[Provider] = []
         for provider in providers:
@@ -34,14 +37,21 @@ def get_assets(jar_path: str, tile_data: dict) -> list[Provider]:
 
             new_providers.append(new_provider)
 
-    return new_providers
+    return new_providers, space_width
 
 def load_tile_data(mc_version: str) -> dict:
     filename = "resources/" + mc_version + ".toml"
     with open(filename, "r") as file:
         return tomllib.loads(file.read())
 
-def build_tileset(tileset_data: dict, providers: list[Provider]) -> (Image, str):
+
+def create_space_tile(width: int, height: int, space_width: int) -> Image:
+    tile = Image.new("RGBA", (width, height), (255, 0, 0, 0))
+    draw = ImageDraw.Draw(tile)
+    draw.rectangle((0, 0, space_width - 2, height), fill="white")
+    return tile
+
+def build_tileset(tileset_data: dict, providers: list[Provider], space_width: int) -> (Image, str):
     tile_width = tileset_data["tile_width"]
     tile_height = tileset_data["tile_height"]
     tile_baseline = tileset_data["tile_baseline"]
@@ -62,7 +72,11 @@ def build_tileset(tileset_data: dict, providers: list[Provider]) -> (Image, str)
         for chars in provider.chars:  # "abcdefghij"
             for char in chars:  # "a"
                 if char != "\x00":
-                    char_img = font_img.crop((font_x, font_y, font_x + char_width, font_y + char_height))
+                    print(char)
+                    if char != " ":
+                        char_img = font_img.crop((font_x, font_y, font_x + char_width, font_y + char_height))
+                    else:
+                        char_img = create_space_tile(char_width, char_height, space_width)
                     tileset.paste(char_img, (tileset_x, tile_height_offset))
                     glyphs += char
 
@@ -93,8 +107,8 @@ def convert_to_pixel_font_converter_batch(tileset: Image, glyphs: str, tileset_d
 
 def build_as_pixel_font_converter_batch(jar_path: str, mc_version: str):
     tile_data = load_tile_data(mc_version)
-    providers = get_assets(jar_path, tile_data)
+    providers, space_width = get_assets(jar_path, tile_data)
     for provider in providers:
         print(provider.id)
-    tileset, glyphs = build_tileset(tile_data["tileset"], providers)
+    tileset, glyphs = build_tileset(tile_data["tileset"], providers, space_width)
     convert_to_pixel_font_converter_batch(tileset, glyphs, tile_data["tileset"])
