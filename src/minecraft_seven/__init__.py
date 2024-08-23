@@ -15,7 +15,7 @@ def get_jar_path() -> str:
     if args.jar_path is not None:
         jar_path: str = os.path.abspath(args.jar_path)
     else:
-        jar_path = open_file(title="Select the 1.21 jar file", filetypes=[("JAR file", ".jar")], multiple=False)
+        jar_path = open_file(title="Select the 1.21 jar file", filetypes=[("JAR file", "*.jar")], multiple=False)
         if jar_path == "":
             raise ValueError("Something went wrong picking the jar file")
 
