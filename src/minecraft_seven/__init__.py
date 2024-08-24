@@ -2,7 +2,7 @@ import argparse
 import os
 from zipfile import ZipFile
 from xdialog import open_file
-from builder import build_as_pixel_font_converter_batch
+from minecraft_seven.builder import build_as_pixel_font_converter_batch
 import json
 
 MINECRAFT_VERSION = "1.21"
