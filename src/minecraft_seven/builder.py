@@ -144,11 +144,11 @@ def build_tileset(
 def build_font_assets(
     jar_path: str, mc_version: str
 ) -> tuple[Image, str, OutputDimensions]:
+    print("Getting assets...")
     dimensions = load_dimensions(mc_version)
     providers, output_dimensions = get_assets(jar_path, dimensions)
-    for provider in providers:
-        print(provider.id)
 
+    print("Building tileset...")
     tileset, glyphs = build_tileset(providers, output_dimensions)
 
     return tileset, glyphs, output_dimensions

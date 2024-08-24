@@ -38,10 +38,13 @@ def check_minecraft_version(jar_path: str):
 
 
 def main() -> None:
+    print("Getting jar file...")
     jar_path = get_jar_path()
     check_minecraft_version(jar_path)
 
     tileset, glyphs, dimensions = build_font_assets(jar_path, MINECRAFT_VERSION)
+
+    print("Exporting...")
     export_to_pixel_font_converter_batch(tileset, glyphs, dimensions)
 
 
