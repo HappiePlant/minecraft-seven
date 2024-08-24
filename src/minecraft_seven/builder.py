@@ -122,7 +122,12 @@ def build_tileset(
                     )
                 else:
                     char_img = font_img.crop(
-                        (font_x, font_y, font_x + provider.width, font_y + provider.height)
+                        (
+                            font_x,
+                            font_y,
+                            font_x + provider.width,
+                            font_y + provider.height,
+                        )
                     )
                 tileset.paste(char_img, (tileset_x, tile_height_offset))
                 glyphs += char
