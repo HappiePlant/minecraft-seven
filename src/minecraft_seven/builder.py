@@ -5,6 +5,9 @@ import json
 from PIL import Image, ImageDraw
 
 
+type MinecraftClientJar = ZipFile
+
+
 class Provider:
     id: str
     file: bytes
@@ -22,7 +25,7 @@ class OutputDimensions:
     tileset_width: int
 
 
-def get_space_width(jar: ZipFile):
+def get_space_width(jar: MinecraftClientJar):
     space_data: dict = json.loads(jar.read("assets/minecraft/font/include/space.json"))
     return space_data["providers"][0]["advances"][" "]
 
@@ -62,7 +65,7 @@ def get_assets(
     return new_providers, out
 
 
-def map_provider_json_to_class(jar, provider, provider_dimensions):
+def map_provider_json_to_class(jar: MinecraftClientJar, provider, provider_dimensions):
     new_provider: Provider = Provider()
     texture_id: str = provider["file"]
 
