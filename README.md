@@ -10,7 +10,7 @@ This project aims to be 100% faithful to the original Minecraft font by providin
 1. Clone this repo
 2. Run `uv run src/minecraft_seven/__init__.py`
 3. Open [Pixel Font Converter](https://yal.cc/r/20/pixelfont/)
-4. Click `Menu` in the top right and select `Batch process`
+4. Click `Menu` on the upper left and select `Batch process`
 5. Navigate to the `out` folder in this repo and select both the `png` and `json` file. (by holding <kbd>Ctrl</kbd>)
 6. Install the ttf in the downloaded zip!
 

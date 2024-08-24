@@ -2,8 +2,10 @@ import argparse
 import os
 from zipfile import ZipFile
 from xdialog import open_file
-from minecraft_seven.builder import build_as_pixel_font_converter_batch
+from minecraft_seven.builder import build_font_assets
 import json
+
+from minecraft_seven.pixel_font_exporter import export_to_pixel_font_converter_batch
 
 MINECRAFT_VERSION = "1.21"
 
@@ -36,11 +38,14 @@ def check_minecraft_version(jar_path: str):
 
 
 def main() -> None:
+    print("Getting jar file...")
     jar_path = get_jar_path()
     check_minecraft_version(jar_path)
-    build_as_pixel_font_converter_batch(jar_path, MINECRAFT_VERSION)
 
-    return
+    tileset, glyphs, dimensions = build_font_assets(jar_path, MINECRAFT_VERSION)
+
+    print("Exporting...")
+    export_to_pixel_font_converter_batch(tileset, glyphs, dimensions)
 
 
 if __name__ == "__main__":
