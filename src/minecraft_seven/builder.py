@@ -30,6 +30,10 @@ def get_space_width(jar: MinecraftClientJar):
     return space_data["providers"][0]["advances"][" "]
 
 
+def get_font_data(jar: MinecraftClientJar):
+    return json.loads(jar.read("assets/minecraft/font/include/default.json"))
+
+
 def get_assets(
     jar_path: str, dimensions: dict
 ) -> tuple[list[Provider], OutputDimensions]:
@@ -37,10 +41,8 @@ def get_assets(
     out.tileset_width = dimensions["output"]["tileset_width"]
 
     with ZipFile(jar_path, "r") as jar:
-        default_data: dict = json.loads(
-            jar.read("assets/minecraft/font/include/default.json")
-        )
-        providers: list[dict] = default_data["providers"]
+        font_data = get_font_data(jar)
+        providers: list[dict] = font_data["providers"]
         new_providers: list[Provider] = []
         out.tile_width = 0
         out.tile_height = 0
@@ -92,7 +94,9 @@ def create_space_tile(width: int, height: int, space_width: int) -> Image:
     return tile
 
 
-def build_tileset(providers: list[Provider], out: OutputDimensions) -> (Image, str):
+def build_tileset(
+    providers: list[Provider], out: OutputDimensions
+) -> tuple[Image, str]:
     tileset = Image.new(
         "RGBA", (out.tileset_width, out.tile_height), color=(255, 0, 0, 0)
     )
@@ -130,29 +134,14 @@ def build_tileset(providers: list[Provider], out: OutputDimensions) -> (Image, s
     return tileset, glyphs
 
 
-def convert_to_pixel_font_converter_batch(
-    tileset: Image, glyphs: str, out: OutputDimensions
-):
-    with open("resources/pixel_font_converter_settings.json") as settings_file:
-        settings = json.load(settings_file)
-
-    settings["glyph-width"] = out.tile_width
-    settings["glyph-height"] = out.tile_height
-    settings["glyph-baseline"] = out.tile_baseline
-
-    settings["in-glyphs"] = [glyphs]
-
-    with open("out/Minecraft Seven.json", "w") as settings_output_file:
-        json.dump(settings, settings_output_file)
-
-    tileset.save("out/Minecraft Seven.png")
-
-
-def build_as_pixel_font_converter_batch(jar_path: str, mc_version: str):
+def build_font_assets(
+    jar_path: str, mc_version: str
+) -> tuple[Image, str, OutputDimensions]:
     dimensions = load_dimensions(mc_version)
     providers, output_dimensions = get_assets(jar_path, dimensions)
     for provider in providers:
         print(provider.id)
 
     tileset, glyphs = build_tileset(providers, output_dimensions)
-    convert_to_pixel_font_converter_batch(tileset, glyphs, output_dimensions)
+
+    return tileset, glyphs, output_dimensions
