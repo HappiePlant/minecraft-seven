@@ -14,11 +14,6 @@ class Provider:
     chars: list[str]
 
 
-class ProviderTileDimensions:
-    width: int
-    height: int
-
-
 class OutputDimensions:
     tile_width: int
     tile_height: int
