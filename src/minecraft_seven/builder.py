@@ -69,15 +69,18 @@ def get_assets(
 
 def map_provider_json_to_class(jar: MinecraftClientJar, provider, provider_dimensions):
     new_provider: Provider = Provider()
-    texture_id: str = provider["file"]
 
+    texture_id: str = provider["file"]
     new_provider.id = texture_id
+
     texture_name = texture_id.replace("minecraft:", "assets/minecraft/textures/")
     new_provider.file = jar.read(texture_name)
-    new_provider.width = provider_dimensions["width"]
-    new_provider.height = provider_dimensions["height"]
+
     new_provider.chars = provider["chars"]
     new_provider.baseline = provider["ascent"]
+    new_provider.width = provider_dimensions["width"]
+    new_provider.height = provider_dimensions["height"]
+
     return new_provider
 
 
@@ -104,32 +107,31 @@ def build_tileset(
     tileset_x = 0
 
     for provider in providers:
-        char_height = provider.height
-        char_width = provider.width
-        char_baseline = provider.baseline
-        tile_height_offset = out.tile_baseline - char_baseline
+        tile_height_offset = out.tile_baseline - provider.baseline
 
         font_img = Image.open(io.BytesIO(provider.file))
         font_x = font_y = 0
         for chars in provider.chars:  # "abcdefghij"
             for char in chars:  # "a"
-                if char != "\x00":
-                    print(char)
-                    if char != " ":
-                        char_img = font_img.crop(
-                            (font_x, font_y, font_x + char_width, font_y + char_height)
-                        )
-                    else:
-                        char_img = create_space_tile(
-                            char_width, char_height, out.space_width
-                        )
-                    tileset.paste(char_img, (tileset_x, tile_height_offset))
-                    glyphs += char
+                if char == "\x00":
+                    break
 
-                    tileset_x += out.tile_width
-                font_x += char_width
+                if char == " ":
+                    char_img = create_space_tile(
+                        provider.width, provider.height, out.space_width
+                    )
+                else:
+                    char_img = font_img.crop(
+                        (font_x, font_y, font_x + provider.width, font_y + provider.height)
+                    )
+                tileset.paste(char_img, (tileset_x, tile_height_offset))
+                glyphs += char
+                tileset_x += out.tile_width
+                font_x += provider.width
+
+            # Start at 0 at next row
             font_x = 0
-            font_y += char_height
+            font_y += provider.height
 
     return tileset, glyphs
 
