@@ -1,7 +1,4 @@
-[tileset]
-tile_width = 9
-tile_height = 12
-tile_baseline = 10
+[output]
 tileset_width = 21717
 
 [providers."minecraft:font/ascii.png"]
